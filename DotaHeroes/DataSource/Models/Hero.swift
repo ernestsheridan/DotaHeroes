@@ -8,56 +8,6 @@
 
 import Foundation
 
-enum HeroAttributeType: String {
-    case strength = "str"
-    case agility = "agi"
-    case intelligence = "int"
-    case unknown = "UNKNOWN"
-    
-    static func get(identifier: String) -> HeroAttributeType {
-        return HeroAttributeType(rawValue: identifier) ?? .unknown
-    }
-}
-
-protocol HeroProtocol {
-    var id: Int { get }
-    var name: String { get }
-    var localizedName: String { get }
-    var primaryAttr: String { get }
-    var attackType: String { get }
-    var roles: [String] { get }
-    var img: String { get }
-    var icon: String { get }
-    var baseHealth: Int { get }
-    var baseMana: Int { get }
-    var baseAttackMax: Int { get }
-    var baseStr: Int { get }
-    var baseAgi: Int { get }
-    var baseInt: Int { get }
-    var strGain: Double { get }
-    var agiGain: Double { get }
-    var intGain: Double { get }
-    var moveSpeed: Int { get }
-    
-    func getIconFullUrl() -> String
-    func getImageFullUrl() -> String
-    func getPrimaryAttribute() -> HeroAttributeType
-}
-
-extension HeroProtocol {
-    func getIconFullUrl() -> String {
-        return openDotaUrl + icon
-    }
-    
-    func getImageFullUrl() -> String {
-        return openDotaUrl + img
-    }
-    
-    func getPrimaryAttribute() -> HeroAttributeType {
-        return HeroAttributeType.get(identifier: primaryAttr)
-    }
-}
-
 struct Hero: Decodable, HeroProtocol {
     var id: Int
     var name: String
