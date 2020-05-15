@@ -19,6 +19,6 @@ class HeroesCollectionViewModel {
                                           roles: hero.roles,
                                           imageUrl: hero.getImageFullUrl())
         })
-        self.heroesCellViewModels = Observable.just(heroesCellViewModels)
+        self.heroesCellViewModels = Observable.of(heroesCellViewModels)
     }
 }

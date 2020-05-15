@@ -12,10 +12,10 @@ class DetailViewBuilder {
     
     var detailViewController: DetailViewController?
     
-    func build(hero: HeroProtocol, heroRecommendation: HeroRecommendationDict) {
+    func build(hero: HeroProtocol, heroes: [HeroProtocol]) {
         guard let detailViewController = UIStoryboard(name: "DetailViewController", bundle: nil)
             .instantiateInitialViewController() as? DetailViewController else { return }
-        let viewModel = DetailViewModel(hero: hero, heroRecommendation: heroRecommendation)
+        let viewModel = DetailViewModel(hero: hero, heroes: heroes)
         detailViewController.viewModel = viewModel
         self.detailViewController = detailViewController
     }

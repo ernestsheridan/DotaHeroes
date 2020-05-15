@@ -24,7 +24,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         UINavigationBar.appearance().titleTextAttributes = [NSAttributedString.Key.foregroundColor: barColor]
         
         window = UIWindow(windowScene: windowScene)
-        window?.overrideUserInterfaceStyle = .dark
+        
+        // This App Support Dark & Light Mode
+//        window?.overrideUserInterfaceStyle = .dark
         
         goToHomePage()
         window?.makeKeyAndVisible()

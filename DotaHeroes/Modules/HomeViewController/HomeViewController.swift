@@ -55,9 +55,8 @@ class HomeViewController: UIViewController {
             .drive(self.rx.title)
             .disposed(by: disposeBag)
         
-        output?.heroes
-            .drive(onNext: { [weak self] heroes in
-                let viewModel = HeroesCollectionViewModel(heroes: heroes)
+        output?.heroesCollectionViewModel
+            .drive(onNext: { [weak self] viewModel in
                 self?.collectionView.viewModel = viewModel
             }).disposed(by: disposeBag)
         
@@ -78,12 +77,18 @@ class HomeViewController: UIViewController {
                 switch viewState {
                 case .error(let description):
                     self?.errorLabel.text = description
+                    self?.errorContainer.backgroundColor = UIColor.red.withAlphaComponent(0.41)
                     self?.errorHeightConstraint.constant = 48
                     UIView.animate(withDuration: 0.3) {
                         self?.errorContainer.layoutIfNeeded()
                     }
                 case .loading:
-                    break
+                    self?.errorLabel.text = "Please Wait"
+                    self?.errorContainer.backgroundColor = UIColor.blue.withAlphaComponent(0.41)
+                    self?.errorHeightConstraint.constant = 48
+                    UIView.animate(withDuration: 0.3) {
+                        self?.errorContainer.layoutIfNeeded()
+                    }
                 case .normal:
                     self?.errorHeightConstraint.constant = 0
                     UIView.animate(withDuration: 0.3) {
@@ -93,10 +98,10 @@ class HomeViewController: UIViewController {
             }).disposed(by: disposeBag)
         
         output?.openDetailHero
-        .drive(onNext: { [weak self] (hero, heroRecommendation) in
+        .drive(onNext: { [weak self] (hero, heroes) in
             guard let hero = hero else { return }
             let builder = DetailViewBuilder()
-            builder.build(hero: hero, heroRecommendation: heroRecommendation)
+            builder.build(hero: hero, heroes: heroes)
             guard let controller = builder.detailViewController else { return }
             self?.navigationController?.pushViewController(controller, animated: true)
         }).disposed(by: disposeBag)

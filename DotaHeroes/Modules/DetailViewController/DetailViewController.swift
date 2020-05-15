@@ -27,6 +27,7 @@ class DetailViewController: UIViewController {
     @IBOutlet weak var recommendationFirst: UIButton!
     @IBOutlet weak var recommendationSecond: UIButton!
     @IBOutlet weak var recommendationThird: UIButton!
+    @IBOutlet var seeMoreSectionHeightConstraint: NSLayoutConstraint!
     
     // MARK: Variables
     
@@ -55,26 +56,28 @@ class DetailViewController: UIViewController {
         output.heroRecommendations
             .subscribeOn(MainScheduler.instance)
             .subscribe(onNext: { [weak self] heroRecommendations in
-                guard let self = self,
-                    heroRecommendations.count >= 3 else {
+                let seeMoreHeightConstraint = self?.seeMoreSectionHeightConstraint
+                guard let self = self, heroRecommendations.count >= 3 else {
+                    seeMoreHeightConstraint?.isActive = true
                     return
                 }
-                let firstRecommendation = heroRecommendations[0]
-                let secondRecommendation = heroRecommendations[1]
-                let thirdRecommendation = heroRecommendations[2]
-                self.recommendationFirst.setTitle(firstRecommendation.localizedName, for: .normal)
-                self.recommendationSecond.setTitle(secondRecommendation.localizedName, for: .normal)
-                self.recommendationThird.setTitle(thirdRecommendation.localizedName, for: .normal)
-                self.recommendationFirst.kf.setImage(with: URL(string: firstRecommendation.getIconFullUrl()), for: .normal)
-                self.recommendationSecond.kf.setImage(with: URL(string: secondRecommendation.getIconFullUrl()), for: .normal)
-                self.recommendationThird.kf.setImage(with: URL(string: thirdRecommendation.getIconFullUrl()), for: .normal)
+                seeMoreHeightConstraint?.isActive = false
+                self.recommendationFirst.setTitle(heroRecommendations[0].localizedName, for: .normal)
+                self.recommendationSecond.setTitle(heroRecommendations[1].localizedName, for: .normal)
+                self.recommendationThird.setTitle(heroRecommendations[2].localizedName, for: .normal)
+                self.recommendationFirst.kf
+                    .setImage(with: URL(string: heroRecommendations[0].getIconFullUrl()), for: .normal)
+                self.recommendationSecond.kf
+                    .setImage(with: URL(string: heroRecommendations[1].getIconFullUrl()), for: .normal)
+                self.recommendationThird.kf
+                    .setImage(with: URL(string: heroRecommendations[2].getIconFullUrl()), for: .normal)
             }).disposed(by: disposeBag)
         
         output.openHeroDetail
             .asDriver { _ in Driver.empty() }
-            .drive(onNext: { [weak self] (hero, heroRecommendations) in
-                guard let hero = hero, let heroRecommendations = heroRecommendations else { return }
-                self?.openHero(hero, heroRecommendation: heroRecommendations)
+            .drive(onNext: { [weak self] (hero, heroes) in
+                guard let hero = hero, heroes.count >= 3  else { return }
+                self?.openHero(hero, heroes: heroes)
             }).disposed(by: disposeBag)
     }
     
@@ -91,16 +94,10 @@ class DetailViewController: UIViewController {
         speedLabel.text = "\(hero.moveSpeed)"
     }
     
-    private func openHero(_ hero: HeroProtocol, heroRecommendation: HeroRecommendationDict) {
+    private func openHero(_ hero: HeroProtocol, heroes: [HeroProtocol]) {
         let builder = DetailViewBuilder()
-        builder.build(hero: hero, heroRecommendation: heroRecommendation)
+        builder.build(hero: hero, heroes: heroes)
         guard let viewController = builder.detailViewController else { return }
         navigationController?.pushViewController(viewController, animated: true)
-    }
-}
-
-public extension Array {
-    subscript (safe index: Int) -> Element? {
-        return index < count ? self[index] : nil
     }
 }
